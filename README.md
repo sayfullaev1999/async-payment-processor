@@ -57,6 +57,8 @@ Asynchronous payment processing service built with **FastAPI**, **RabbitMQ**, **
 - Dishka
 - Pydantic v2
 - Docker Compose
+- pytest
+- pytest-asyncio
 
 ## Project Structure
 
@@ -69,6 +71,11 @@ src/
 ├── infrastructure/
 │   ├── database/
 │   └── messaging/
+├── tests/
+│   ├── unit/
+│   │   └── payments/
+│   │       └── test_service.py
+│   └── integration/
 ├── main.py
 └── worker.py
 
