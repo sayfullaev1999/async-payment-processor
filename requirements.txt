@@ -8,3 +8,5 @@ asyncpg==0.31.0
 alembic==1.20.0
 greenlet==3.5.6
 faststream[rabbit]==0.7.5
+dishka-faststream==0.7.0
+httpx==0.28.1

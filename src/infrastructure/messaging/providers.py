@@ -1,7 +1,7 @@
 from dishka import Provider, Scope, provide
 from faststream.rabbit import RabbitBroker
 
-from src.core.settings import settings
+from infrastructure.messaging.broker import broker as rabbit_broker_instance
 
 
 class MessagingProvider(Provider):
@@ -9,4 +9,4 @@ class MessagingProvider(Provider):
 
     @provide
     def rabbit_broker(self) -> RabbitBroker:
-        return RabbitBroker(settings.RABBITMQ_URL)
+        return rabbit_broker_instance
