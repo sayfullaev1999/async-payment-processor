@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,4 +20,5 @@ class Settings(BaseSettings):
     )
 
 
+load_dotenv()
 settings = Settings()
