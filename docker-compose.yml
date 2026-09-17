@@ -5,8 +5,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
@@ -21,9 +19,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    ports:
-      - "${RABBITMQ_PORT}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -31,6 +26,51 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  migrate:
+    build: .
+    container_name: async-payment-migrate
+    env_file:
+      - .env
+    working_dir: /app/src
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build: .
+    container_name: async-payment-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    working_dir: /app/src
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  consumer:
+    build: .
+    container_name: async-payment-consumer
+    restart: unless-stopped
+    env_file:
+      - .env
+    working_dir: /app/src
+    command: python worker.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:
