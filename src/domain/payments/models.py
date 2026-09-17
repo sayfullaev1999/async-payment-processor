@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .enums import PaymentCurrency, PaymentStatus
-from infrastructure.database.models.base import BaseModel
+from infrastructure.database.models import BaseModel
 
 
 class Payment(BaseModel):

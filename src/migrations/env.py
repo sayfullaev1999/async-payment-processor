@@ -6,10 +6,10 @@ from alembic import context
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from core.settings import settings
-from infrastructure.database.models.base import BaseModel
-from infrastructure.database.models.outbox import Outbox
+from infrastructure.database.models import BaseModel
+from outbox.models import Outbox
 
-from payments.models import Payment
+from domain.payments.models import Payment
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
