@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 
 from domain.payments.commands import CreatePaymentCommand
+from domain.payments.exceptions import PaymentNotFoundError
 from domain.payments.models import Payment
 from infrastructure.database.uow import UnitOfWork
 from outbox.repository import OutboxRepository
@@ -52,7 +53,6 @@ class PaymentService:
         payment = await self.payment_repository.get_by_id(payment_id)
 
         if not payment:
-            # здесь позже добавим PaymentNotFoundError
-            raise ValueError("Payment not found")
+            raise PaymentNotFoundError("Payment not found")
 
         return payment

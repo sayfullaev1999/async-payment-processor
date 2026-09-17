@@ -6,6 +6,8 @@ from core.containers import app_container
 from core.security import verify_api_key
 from core.settings import settings
 from core.logging.middleware import logging_middleware
+from core.exception_handlers import register_exception_handlers
+
 from domain.payments.router import router as payments_router
 
 app = FastAPI(
@@ -16,4 +18,5 @@ app = FastAPI(
 
 app.middleware("http")(logging_middleware)
 app.include_router(payments_router)
+register_exception_handlers(app)
 setup_dishka(app_container, app)
