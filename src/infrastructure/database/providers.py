@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.settings import settings
 from infrastructure.database.database import Database
+from infrastructure.database.uow import UnitOfWork
 
 
 class DatabaseProvider(Provider):
@@ -20,3 +21,7 @@ class DatabaseProvider(Provider):
     async def session(self, database: Database) -> AsyncIterable[AsyncSession]:
         async with database.session_factory() as session:
             yield session
+
+    @provide(scope=Scope.REQUEST)
+    def uow(self, session: AsyncSession) -> UnitOfWork:
+        return UnitOfWork(session)
