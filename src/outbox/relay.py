@@ -42,11 +42,25 @@ class OutboxRelay:
             pending = await outbox_repo.get_pending(limit=self._batch_size)
 
             for event in pending:
-                await self._broker.publish(
-                    event.payload,
-                    exchange=payments_exchange,
-                    routing_key=event.event_type,
-                )
+                try:
+                    await self._broker.publish(
+                        event.payload,
+                        exchange=payments_exchange,
+                        routing_key=event.event_type,
+                    )
+                except Exception:
+                    # Изолируем ошибку одного события: иначе исключение прервало
+                    # бы весь батч до commit(), и уже опубликованные события были
+                    # бы откачены и переотправлены повторно при следующем poll'е.
+                    await outbox_repo.increment_attempts(event.id)
+                    logger.exception(
+                        "Failed to publish outbox event %s (event_type=%s, attempt=%s)",
+                        event.id,
+                        event.event_type,
+                        event.attempts,
+                    )
+                    continue
+
                 await outbox_repo.mark_published(event.id)
 
             await session.commit()

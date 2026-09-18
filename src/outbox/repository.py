@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select
@@ -43,4 +43,10 @@ class OutboxRepository:
         event = await self.session.get(Outbox, event_id)
 
         if event is not None:
-            event.published_at = datetime.utcnow()
+            event.published_at = datetime.now(timezone.utc)
+
+    async def increment_attempts(self, event_id: UUID) -> None:
+        event = await self.session.get(Outbox, event_id)
+
+        if event is not None:
+            event.attempts += 1

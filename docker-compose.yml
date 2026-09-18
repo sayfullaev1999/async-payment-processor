@@ -48,6 +48,11 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8000), timeout=3).close()"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     depends_on:
       postgres:
         condition: service_healthy
